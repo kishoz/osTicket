@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: osticket-mysql
+  labels:
+    app: osticket
+spec:
+  selector:
+    matchLabels:
+      app: osticket
+      tier: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: osticket
+        tier: mysql
+    spec:
+      containers:
+      - image: mysql:5.6
+        name: mysql
+        envFrom:
+         - configMapRef:
+            name: osticket-mysql-mysecret
+        resources:
+           requests:
+               memory: "4Gi"
+               cpu: 1
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: osticket-mysql
+  labels:
+    app: osticket
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:
+    app: osticket
+    tier: mysql

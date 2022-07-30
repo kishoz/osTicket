@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: osticket-mysql-mysecret
+data:
+   MYSQL_ROOT_PASSWORD: secret
+   MYSQL_DATABASE: osticket
+   MYSQL_USER: osticket
+   MYSQL_PASSWORD: secret
